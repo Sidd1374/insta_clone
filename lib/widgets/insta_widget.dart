@@ -7,7 +7,7 @@ enum StoryType { normal, live, closeFriend, premium }
 const String _newStoryRingAsset = 'assets/icons/Insta/new_story_badge.svg';
 const String _liveBadgeAsset = 'assets/icons/Insta/Live_badge.svg';
 const String _premiumBadgeAsset = 'assets/icons/Insta/premium_badge.svg';
-const double _sectionHeight = 194;
+const double _sectionHeight = 118;
 const double _ringSize = 98;
 const double _ringToImageGap = 7;
 const double _avatarSize = _ringSize - (_ringToImageGap * 2);
