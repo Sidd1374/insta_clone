@@ -288,3 +288,174 @@ void showInstaDropdown(BuildContext context) async {
     ],
   );
 }
+
+void optionsPosts_drawer(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return const _InstaPostMenu();
+    },
+  );
+}
+
+class _InstaPostMenu extends StatelessWidget {
+  const _InstaPostMenu();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 14),
+            decoration: BoxDecoration(
+              color: Colors.grey[400],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: const [
+                _TopAction(icon: Icons.bookmark_border, label: 'Save'),
+                _TopAction(icon: Icons.loop, label: 'Remix'),
+                _TopAction(icon: Icons.qr_code, label: 'QR code'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Divider(
+            indent: 12,
+            endIndent: 12,
+            color: Color.fromARGB(255, 226, 226, 226),
+          ),
+          _MenuItem(
+            icon: Icons.star_border,
+            text: 'Add to favorites',
+            onTap: () {},
+          ),
+          _MenuItem(
+            icon: Icons.person_remove_outlined,
+            text: 'Unfollow',
+            onTap: () {},
+          ),
+          const Divider(
+            indent: 12,
+            endIndent: 12,
+            color: Color.fromARGB(255, 226, 226, 226),
+          ),
+          _MenuItem(
+            icon: Icons.closed_caption_outlined,
+            text: 'Closed Captions',
+            onTap: () {},
+          ),
+          _MenuItem(
+            icon: Icons.info_outline,
+            text: "Why you're seeing this post",
+            onTap: () {},
+          ),
+          _MenuItem(
+            icon: Icons.visibility_off_outlined,
+            text: 'Hide',
+            onTap: () {},
+          ),
+          _MenuItem(
+            icon: Icons.person_outline,
+            text: 'About this account',
+            onTap: () {},
+          ),
+          _MenuItem(
+            icon: Icons.report_outlined,
+            text: 'Report',
+            isDestructive: true,
+            onTap: () {},
+          ),
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _TopAction({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: () {},
+      borderRadius: BorderRadius.circular(40),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        child: Column(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: theme.dividerColor),
+              ),
+              child: Icon(icon),
+            ),
+            const SizedBox(height: 6),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
+  final IconData icon;
+  final String text;
+  final VoidCallback onTap;
+  final bool isDestructive;
+
+  const _MenuItem({
+    required this.icon,
+    required this.text,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isDestructive ? theme.colorScheme.error : theme.iconTheme.color,
+      ),
+      title: Text(
+        text,
+        style: TextStyle(
+          color: isDestructive
+              ? theme.colorScheme.error
+              : theme.textTheme.bodyMedium?.color,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+}

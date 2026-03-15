@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insta_clone/widgets/insta_widget.dart' as wid;
 
 enum PostType { normal, sponsored, ad }
 
@@ -11,6 +12,7 @@ class InstaPost extends StatefulWidget {
   final PostType postType;
   final String? subLabel;
   final String? ctaText;
+  final bool showFollowButton;
 
   const InstaPost({
     super.key,
@@ -22,6 +24,7 @@ class InstaPost extends StatefulWidget {
     this.postType = PostType.normal,
     this.subLabel,
     this.ctaText,
+    this.showFollowButton = false,
   });
 
   @override
@@ -89,7 +92,25 @@ class _InstaPostState extends State<InstaPost> {
                 ],
               ),
               const Spacer(),
-              Icon(Icons.more_horiz, color: theme.iconTheme.color),
+              if (widget.showFollowButton) ...[
+                TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    foregroundColor: colorScheme.primary,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: const Size(0, 32),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Follow'),
+                ),
+                const SizedBox(width: 4),
+              ],
+              GestureDetector(
+                onTap: () {
+                  wid.optionsPosts_drawer(context);
+                },
+                child: Icon(Icons.more_vert, color: theme.iconTheme.color),
+              ),
             ],
           ),
         ),

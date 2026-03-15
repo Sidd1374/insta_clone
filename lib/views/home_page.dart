@@ -1,7 +1,18 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../widgets/insta_widget.dart' as wid;
 import '../widgets/image_posts.dart';
+import '../widgets/insta_reel_post.dart';
+
+enum _FeedItemType { post, reel }
+
+class _FeedItem {
+  final _FeedItemType type;
+  final Map<String, dynamic> data;
+  const _FeedItem(this.type, this.data);
+}
 
 class HomePageFrame extends StatefulWidget {
   const HomePageFrame({super.key});
@@ -11,6 +22,9 @@ class HomePageFrame extends StatefulWidget {
 }
 
 class HhomePgaeFrameState extends State<HomePageFrame> {
+  final Random _random = Random();
+  List<_FeedItem> _feedItems = [];
+
   final List<Map<String, dynamic>> dummyStories = [
     {
       "username": "your_story",
@@ -73,6 +87,7 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
       'postType': 'sponsored',
       'subLabel': null,
       'ctaText': null,
+      'showFollowButton': false,
     },
     {
       'username': 'NatureDaily',
@@ -87,6 +102,7 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
       'postType': 'normal',
       'subLabel': '📍 Swiss Alps',
       'ctaText': null,
+      'showFollowButton': true,
     },
     {
       'username': 'MusicWorld',
@@ -97,6 +113,7 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
       'postType': 'normal',
       'subLabel': '🎵 Original Audio',
       'ctaText': null,
+      'showFollowButton': true,
     },
     {
       'username': 'Nike',
@@ -107,6 +124,7 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
       'postType': 'ad',
       'subLabel': null,
       'ctaText': 'Shop Now',
+      'showFollowButton': false,
     },
     {
       'username': 'TravelGram',
@@ -117,6 +135,7 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
       'postType': 'normal',
       'subLabel': '📍 Bali',
       'ctaText': null,
+      'showFollowButton': true,
     },
     {
       'username': 'Apple',
@@ -131,6 +150,46 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
       'postType': 'sponsored',
       'subLabel': null,
       'ctaText': null,
+      'showFollowButton': false,
+    },
+  ];
+
+  final List<Map<String, dynamic>> dummyReels = [
+    {
+      'username': 'thatcreditcardguy',
+      'profileImage': 'assets/Images/u1.png',
+      'videoPath': 'assets/videos/reel_1.mp4',
+      'caption': 'The Daily Objects Stack has taken over',
+      'likes': 10500,
+      'comments': 97,
+      'shares': 1920,
+      'ctaText': 'Shop now',
+      'isAd': true,
+      'showFollowButton': false,
+    },
+    {
+      'username': 'NatureDaily',
+      'profileImage': 'assets/Images/u2.png',
+      'videoPath': 'assets/videos/reel_1.mp4',
+      'caption': 'Morning hike views straight from the Alps 🌄',
+      'likes': 5200,
+      'comments': 43,
+      'shares': 312,
+      'ctaText': null,
+      'isAd': false,
+      'showFollowButton': true,
+    },
+    {
+      'username': 'MusicWorld',
+      'profileImage': 'assets/Images/u3.png',
+      'videoPath': 'assets/videos/reel_1.mp4',
+      'caption': 'New beat drop incoming 🎵🔥',
+      'likes': 8800,
+      'comments': 120,
+      'shares': 670,
+      'ctaText': null,
+      'isAd': false,
+      'showFollowButton': true,
     },
   ];
 
@@ -146,9 +205,61 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _feedItems = _buildFeedItems();
+  }
+
+  /// Mixes posts and reels: pattern [1 post, 1 reel, 2 posts] repeating.
+  /// Add -2 to the pattern for suggestion slots later.
+  List<_FeedItem> _buildFeedItems() {
+    final posts = List<Map<String, dynamic>>.from(dummyPosts)..shuffle(_random);
+    final reels = List<Map<String, dynamic>>.from(dummyReels)..shuffle(_random);
+
+    final postItems = posts
+        .map((p) => _FeedItem(_FeedItemType.post, p))
+        .toList();
+    final reelItems = reels
+        .map((r) => _FeedItem(_FeedItemType.reel, r))
+        .toList();
+
+    // positive int = N posts consumed, -1 = 1 reel consumed
+    const pattern = [1, -1, 2];
+    int postIdx = 0, reelIdx = 0, pi = 0;
+    final result = <_FeedItem>[];
+
+    while (postIdx < postItems.length || reelIdx < reelItems.length) {
+      final step = pattern[pi % pattern.length];
+      if (step == -1) {
+        if (reelIdx < reelItems.length) {
+          result.add(reelItems[reelIdx++]);
+        } else if (postIdx < postItems.length) {
+          result.add(postItems[postIdx++]);
+        }
+      } else {
+        for (int i = 0; i < step; i++) {
+          if (postIdx < postItems.length) {
+            result.add(postItems[postIdx++]);
+          } else if (reelIdx < reelItems.length) {
+            result.add(reelItems[reelIdx++]);
+          }
+        }
+      }
+      pi++;
+    }
+
+    return result;
+  }
+
   Future<void> _onRefresh() async {
-    // Replace with real data fetch when ready
     await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _feedItems = _buildFeedItems();
+    });
   }
 
   @override
@@ -209,21 +320,39 @@ class HhomePgaeFrameState extends State<HomePageFrame> {
               ),
             ),
             SliverList.builder(
-              itemCount: dummyPosts.length,
+              itemCount: _feedItems.length,
               itemBuilder: (context, index) {
-                final post = dummyPosts[index];
-                final images =
-                    (post['postImages'] as List?)?.cast<String>() ?? <String>[];
+                final item = _feedItems[index];
+                final data = item.data;
 
+                if (item.type == _FeedItemType.reel) {
+                  return InstaReelPost(
+                    username: data['username']?.toString() ?? '',
+                    profileImage: data['profileImage']?.toString() ?? '',
+                    videoPath: data['videoPath']?.toString() ?? '',
+                    caption: data['caption']?.toString() ?? '',
+                    likes: (data['likes'] as num?)?.toInt() ?? 0,
+                    comments: (data['comments'] as num?)?.toInt() ?? 0,
+                    shares: (data['shares'] as num?)?.toInt() ?? 0,
+                    ctaText: data['ctaText']?.toString(),
+                    isAd: data['isAd'] == true,
+                    showFollowButton: data['showFollowButton'] == true,
+                  );
+                }
+
+                // default: image post
+                final images =
+                    (data['postImages'] as List?)?.cast<String>() ?? <String>[];
                 return InstaPost(
-                  username: post['username']?.toString() ?? '',
-                  profileImage: post['profileImage']?.toString() ?? '',
+                  username: data['username']?.toString() ?? '',
+                  profileImage: data['profileImage']?.toString() ?? '',
                   postImages: images,
-                  caption: post['caption']?.toString() ?? '',
-                  likes: (post['likes'] as num?)?.toInt() ?? 0,
-                  postType: _postTypeFromValue(post['postType']),
-                  subLabel: post['subLabel']?.toString(),
-                  ctaText: post['ctaText']?.toString(),
+                  caption: data['caption']?.toString() ?? '',
+                  likes: (data['likes'] as num?)?.toInt() ?? 0,
+                  postType: _postTypeFromValue(data['postType']),
+                  subLabel: data['subLabel']?.toString(),
+                  ctaText: data['ctaText']?.toString(),
+                  showFollowButton: data['showFollowButton'] == true,
                 );
               },
             ),
