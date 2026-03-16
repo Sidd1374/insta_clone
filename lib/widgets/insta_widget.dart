@@ -265,23 +265,41 @@ void showInstaDropdown(BuildContext context) async {
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
     elevation: 6,
     items: [
-      const PopupMenuItem(
+      PopupMenuItem(
         value: "following",
         child: Row(
           children: [
-            Icon(Icons.people_outline),
-            SizedBox(width: 12),
-            Text("Following"),
+            SvgPicture.asset(
+              'assets/icons/24x/People.svg',
+              width: 20,
+              height: 20,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).iconTheme.color ??
+                    Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text("Following"),
           ],
         ),
       ),
-      const PopupMenuItem(
+      PopupMenuItem(
         value: "favorites",
         child: Row(
           children: [
-            Icon(Icons.star_border),
-            SizedBox(width: 12),
-            Text("Favorites"),
+            SvgPicture.asset(
+              'assets/icons/24x/Star (Round).svg',
+              width: 20,
+              height: 20,
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).iconTheme.color ??
+                    Theme.of(context).colorScheme.onSurface,
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text("Favorites"),
           ],
         ),
       ),
@@ -330,9 +348,18 @@ class _InstaPostMenu extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: const [
-                _TopAction(icon: Icons.bookmark_border, label: 'Save'),
-                _TopAction(icon: Icons.loop, label: 'Remix'),
-                _TopAction(icon: Icons.qr_code, label: 'QR code'),
+                _TopAction(
+                  iconAsset: 'assets/icons/24x/Save.svg',
+                  label: 'Save',
+                ),
+                _TopAction(
+                  iconAsset: 'assets/icons/24x/Repost.svg',
+                  label: 'Remix',
+                ),
+                _TopAction(
+                  iconAsset: 'assets/icons/24x/Link.svg',
+                  label: 'QR code',
+                ),
               ],
             ),
           ),
@@ -343,12 +370,12 @@ class _InstaPostMenu extends StatelessWidget {
             color: Color.fromARGB(255, 226, 226, 226),
           ),
           _MenuItem(
-            icon: Icons.star_border,
+            iconAsset: 'assets/icons/24x/Star (Round).svg',
             text: 'Add to favorites',
             onTap: () {},
           ),
           _MenuItem(
-            icon: Icons.person_remove_outlined,
+            iconAsset: 'assets/icons/24x/profile.svg',
             text: 'Unfollow',
             onTap: () {},
           ),
@@ -358,27 +385,27 @@ class _InstaPostMenu extends StatelessWidget {
             color: Color.fromARGB(255, 226, 226, 226),
           ),
           _MenuItem(
-            icon: Icons.closed_caption_outlined,
+            iconAsset: 'assets/icons/24x/Text.svg',
             text: 'Closed Captions',
             onTap: () {},
           ),
           _MenuItem(
-            icon: Icons.info_outline,
+            iconAsset: 'assets/icons/24x/Branded.svg',
             text: "Why you're seeing this post",
             onTap: () {},
           ),
           _MenuItem(
-            icon: Icons.visibility_off_outlined,
+            iconAsset: 'assets/icons/24x/Notifications Off.svg',
             text: 'Hide',
             onTap: () {},
           ),
           _MenuItem(
-            icon: Icons.person_outline,
+            iconAsset: 'assets/icons/24x/profile.svg',
             text: 'About this account',
             onTap: () {},
           ),
           _MenuItem(
-            icon: Icons.report_outlined,
+            iconAsset: 'assets/icons/24x/Close.svg',
             text: 'Report',
             isDestructive: true,
             onTap: () {},
@@ -391,10 +418,10 @@ class _InstaPostMenu extends StatelessWidget {
 }
 
 class _TopAction extends StatelessWidget {
-  final IconData icon;
+  final String iconAsset;
   final String label;
 
-  const _TopAction({required this.icon, required this.label});
+  const _TopAction({required this.iconAsset, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -414,7 +441,17 @@ class _TopAction extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: theme.dividerColor),
               ),
-              child: Icon(icon),
+              child: Center(
+                child: SvgPicture.asset(
+                  iconAsset,
+                  width: 24,
+                  height: 24,
+                  colorFilter: ColorFilter.mode(
+                    theme.iconTheme.color ?? theme.colorScheme.onSurface,
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 6),
             Text(label),
@@ -426,13 +463,13 @@ class _TopAction extends StatelessWidget {
 }
 
 class _MenuItem extends StatelessWidget {
-  final IconData icon;
+  final String iconAsset;
   final String text;
   final VoidCallback onTap;
   final bool isDestructive;
 
   const _MenuItem({
-    required this.icon,
+    required this.iconAsset,
     required this.text,
     required this.onTap,
     this.isDestructive = false,
@@ -443,9 +480,16 @@ class _MenuItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return ListTile(
-      leading: Icon(
-        icon,
-        color: isDestructive ? theme.colorScheme.error : theme.iconTheme.color,
+      leading: SvgPicture.asset(
+        iconAsset,
+        width: 22,
+        height: 22,
+        colorFilter: ColorFilter.mode(
+          isDestructive
+              ? theme.colorScheme.error
+              : (theme.iconTheme.color ?? theme.colorScheme.onSurface),
+          BlendMode.srcIn,
+        ),
       ),
       title: Text(
         text,

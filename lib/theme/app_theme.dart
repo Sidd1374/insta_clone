@@ -29,7 +29,7 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     const colorScheme = ColorScheme.light(
-      primary: InstaColors.blue,
+      primary: InstaColors.lightPrimaryText,
       error: InstaColors.red,
       surface: InstaColors.lightBackground,
       onSurface: InstaColors.lightPrimaryText,
@@ -43,6 +43,10 @@ class AppTheme {
       colorScheme: colorScheme,
       dividerColor: InstaColors.lightDivider,
       primaryColor: InstaColors.lightPrimaryText,
+      cardTheme: CardThemeData(
+        color: colorScheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: InstaColors.lightBackground,
         foregroundColor: InstaColors.lightPrimaryText,
@@ -61,6 +65,16 @@ class AppTheme {
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: colorScheme.surfaceContainerHighest,
+          foregroundColor: colorScheme.onSurface,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(color: InstaColors.lightPrimaryText),
         bodyMedium: TextStyle(color: InstaColors.lightSecondaryText),
@@ -70,7 +84,7 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     const colorScheme = ColorScheme.dark(
-      primary: InstaColors.blue,
+      primary: InstaColors.darkPrimaryText,
       error: InstaColors.red,
       surface: InstaColors.darkSurface,
       onSurface: InstaColors.darkPrimaryText,
@@ -84,6 +98,10 @@ class AppTheme {
       colorScheme: colorScheme,
       dividerColor: InstaColors.darkDivider,
       primaryColor: InstaColors.darkPrimaryText,
+      cardTheme: CardThemeData(
+        color: colorScheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: InstaColors.darkBackground,
         foregroundColor: InstaColors.darkPrimaryText,
@@ -101,6 +119,16 @@ class AppTheme {
         showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: colorScheme.surfaceContainerHighest,
+          foregroundColor: colorScheme.onSurface,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
       ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(color: InstaColors.darkPrimaryText),

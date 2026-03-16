@@ -81,8 +81,22 @@ BottomNavigationBarItem _navBarItem(
   String label,
 ) {
   return BottomNavigationBarItem(
-    icon: SvgPicture.asset(iconOutline, width: 28, height: 28),
-    activeIcon: SvgPicture.asset(iconFilled, width: 28, height: 28),
+    icon: SvgPicture.asset(
+      iconOutline,
+      width: 28,
+      height: 28,
+      color: Theme.of(
+        context,
+      ).bottomNavigationBarTheme.unselectedIconTheme?.color,
+    ),
+    activeIcon: SvgPicture.asset(
+      iconFilled,
+      width: 28,
+      height: 28,
+      color: Theme.of(
+        context,
+      ).bottomNavigationBarTheme.selectedIconTheme?.color,
+    ),
     label: label,
   );
 }

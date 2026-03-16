@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:insta_clone/widgets/insta_widget.dart' as wid;
 import 'package:video_player/video_player.dart';
 
@@ -35,6 +36,10 @@ class InstaReelPost extends StatefulWidget {
 class _InstaReelPostState extends State<InstaReelPost> {
   late final VideoPlayerController _controller;
   bool _isMuted = false;
+  bool _liked = false;
+  bool _commented = false;
+  bool _shared = false;
+  bool _saved = false;
 
   @override
   void initState() {
@@ -69,6 +74,30 @@ class _InstaReelPostState extends State<InstaReelPost> {
     });
   }
 
+  void _toggleLike() {
+    setState(() {
+      _liked = !_liked;
+    });
+  }
+
+  void _toggleComment() {
+    setState(() {
+      _commented = !_commented;
+    });
+  }
+
+  void _toggleShare() {
+    setState(() {
+      _shared = !_shared;
+    });
+  }
+
+  void _toggleSave() {
+    setState(() {
+      _saved = !_saved;
+    });
+  }
+
   String formatNumber(int number) {
     if (number >= 1000000) {
       return '${(number / 1000000).toStringAsFixed(1)}M';
@@ -85,6 +114,11 @@ class _InstaReelPostState extends State<InstaReelPost> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
     final mediaHeight = MediaQuery.sizeOf(context).width.clamp(380.0, 520.0);
+    final baseIconColor = theme.iconTheme.color ?? colorScheme.onSurface;
+    final likeColor = _liked ? colorScheme.error : baseIconColor;
+    final commentColor = _commented ? colorScheme.primary : baseIconColor;
+    final shareColor = _shared ? colorScheme.primary : baseIconColor;
+    final saveColor = _saved ? colorScheme.primary : baseIconColor;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,10 +230,16 @@ class _InstaReelPostState extends State<InstaReelPost> {
                         color: Colors.black45,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        _isMuted ? Icons.volume_off : Icons.volume_up,
-                        color: Colors.white,
-                        size: 18,
+                      child: SvgPicture.asset(
+                        _isMuted
+                            ? 'assets/icons/24x/Notifications Off.svg'
+                            : 'assets/icons/24x/Notifications On.svg',
+                        width: 18,
+                        height: 18,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),
@@ -208,7 +248,15 @@ class _InstaReelPostState extends State<InstaReelPost> {
                     onTap: () {
                       wid.optionsPosts_drawer(context);
                     },
-                    child: const Icon(Icons.more_vert, color: Colors.white),
+                    child: SvgPicture.asset(
+                      'assets/icons/24x/Options.svg',
+                      width: 22,
+                      height: 22,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -237,10 +285,14 @@ class _InstaReelPostState extends State<InstaReelPost> {
                           ),
                         ),
                         const Spacer(),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: colorScheme.onPrimary,
-                          size: 16,
+                        SvgPicture.asset(
+                          'assets/icons/24x/Next.svg',
+                          width: 16,
+                          height: 16,
+                          colorFilter: ColorFilter.mode(
+                            colorScheme.onPrimary,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ],
                     ),
@@ -255,39 +307,46 @@ class _InstaReelPostState extends State<InstaReelPost> {
           child: Row(
             children: [
               GestureDetector(
-                onTap: () {},
+                onTap: _toggleLike,
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.favorite_border,
-                      size: 28,
-                      color: theme.iconTheme.color,
+                    SvgPicture.asset(
+                      _liked
+                          ? 'assets/icons/24x/Like_Filled.svg'
+                          : 'assets/icons/24x/Like.svg',
+                      width: 28,
+                      height: 28,
+                      colorFilter: ColorFilter.mode(likeColor, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 14),
                     Text(
                       formatNumber(widget.likes),
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
+                      style: textTheme.bodyMedium?.copyWith(color: likeColor),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 18),
               GestureDetector(
-                onTap: () {},
+                onTap: _toggleComment,
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.chat_bubble_outline,
-                      size: 26,
-                      color: theme.iconTheme.color,
+                    SvgPicture.asset(
+                      _commented
+                          ? 'assets/icons/24x/Text.svg'
+                          : 'assets/icons/24x/Comment.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: ColorFilter.mode(
+                        commentColor,
+                        BlendMode.srcIn,
+                      ),
                     ),
                     const SizedBox(width: 6),
                     Text(
                       formatNumber(widget.comments),
                       style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface,
+                        color: commentColor,
                       ),
                     ),
                   ],
@@ -295,27 +354,38 @@ class _InstaReelPostState extends State<InstaReelPost> {
               ),
               const SizedBox(width: 18),
               GestureDetector(
-                onTap: () {},
+                onTap: _toggleShare,
                 child: Row(
                   children: [
-                    Icon(Icons.repeat, size: 26, color: theme.iconTheme.color),
+                    SvgPicture.asset(
+                      _shared
+                          ? 'assets/icons/24x/share_2026_filled.svg'
+                          : 'assets/icons/24x/share_2026.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: ColorFilter.mode(
+                        shareColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       formatNumber(widget.shares),
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
+                      style: textTheme.bodyMedium?.copyWith(color: shareColor),
                     ),
                   ],
                 ),
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {},
-                child: Icon(
-                  Icons.bookmark_border,
-                  size: 26,
-                  color: theme.iconTheme.color,
+                onTap: _toggleSave,
+                child: SvgPicture.asset(
+                  _saved
+                      ? 'assets/icons/24x/Save_Filled.svg'
+                      : 'assets/icons/24x/Save.svg',
+                  width: 26,
+                  height: 26,
+                  colorFilter: ColorFilter.mode(saveColor, BlendMode.srcIn),
                 ),
               ),
             ],

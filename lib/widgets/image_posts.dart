@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:insta_clone/widgets/insta_widget.dart' as wid;
 
 enum PostType { normal, sponsored, ad }
@@ -9,6 +10,10 @@ class InstaPost extends StatefulWidget {
   final List<String> postImages;
   final String caption;
   final int likes;
+  final int comments;
+  final int reshares;
+  final int shares;
+  final int saves;
   final PostType postType;
   final String? subLabel;
   final String? ctaText;
@@ -21,6 +26,10 @@ class InstaPost extends StatefulWidget {
     required this.postImages,
     required this.caption,
     required this.likes,
+    this.comments = 0,
+    this.reshares = 0,
+    this.shares = 0,
+    this.saves = 0,
     this.postType = PostType.normal,
     this.subLabel,
     this.ctaText,
@@ -34,6 +43,11 @@ class InstaPost extends StatefulWidget {
 class _InstaPostState extends State<InstaPost> {
   int currentIndex = 0;
   late final PageController _pageController;
+  bool _liked = false;
+  bool _commented = false;
+  bool _reshared = false;
+  bool _shared = false;
+  bool _saved = false;
 
   @override
   void initState() {
@@ -47,6 +61,46 @@ class _InstaPostState extends State<InstaPost> {
     super.dispose();
   }
 
+  void _toggleLike() {
+    setState(() {
+      _liked = !_liked;
+    });
+  }
+
+  void _toggleComment() {
+    setState(() {
+      _commented = !_commented;
+    });
+  }
+
+  void _toggleShare() {
+    setState(() {
+      _shared = !_shared;
+    });
+  }
+
+  void _toggleReshare() {
+    setState(() {
+      _reshared = !_reshared;
+    });
+  }
+
+  void _toggleSave() {
+    setState(() {
+      _saved = !_saved;
+    });
+  }
+
+  String _formatCount(int number) {
+    if (number >= 1000000) {
+      return '${(number / 1000000).toStringAsFixed(1)}M';
+    }
+    if (number >= 1000) {
+      return '${(number / 1000).toStringAsFixed(1)}K';
+    }
+    return number.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -54,6 +108,16 @@ class _InstaPostState extends State<InstaPost> {
     final textTheme = theme.textTheme;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final mediaHeight = screenWidth.clamp(300.0, 430.0);
+    final baseIconColor = theme.iconTheme.color ?? colorScheme.onSurface;
+    final likeColor = _liked ? colorScheme.error : baseIconColor;
+    final commentColor = _commented ? colorScheme.primary : baseIconColor;
+    final reshareColor = _reshared ? colorScheme.primary : baseIconColor;
+    final shareColor = _shared ? colorScheme.primary : baseIconColor;
+    final saveColor = _saved ? colorScheme.primary : baseIconColor;
+    final actionCountStyle = textTheme.bodySmall?.copyWith(
+      fontWeight: FontWeight.w600,
+      fontSize: 12,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,7 +173,12 @@ class _InstaPostState extends State<InstaPost> {
                 onTap: () {
                   wid.optionsPosts_drawer(context);
                 },
-                child: Icon(Icons.more_vert, color: theme.iconTheme.color),
+                child: SvgPicture.asset(
+                  'assets/icons/24x/Options.svg',
+                  width: 22,
+                  height: 22,
+                  colorFilter: ColorFilter.mode(baseIconColor, BlendMode.srcIn),
+                ),
               ),
             ],
           ),
@@ -180,10 +249,14 @@ class _InstaPostState extends State<InstaPost> {
                   ),
                 ),
                 const Spacer(),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: colorScheme.onPrimary,
-                  size: 16,
+                SvgPicture.asset(
+                  'assets/icons/24x/Next.svg',
+                  width: 16,
+                  height: 16,
+                  colorFilter: ColorFilter.mode(
+                    colorScheme.onPrimary,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ],
             ),
@@ -192,24 +265,118 @@ class _InstaPostState extends State<InstaPost> {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Row(
             children: [
-              Icon(
-                Icons.favorite_border,
-                size: 28,
-                color: theme.iconTheme.color,
+              GestureDetector(
+                onTap: _toggleLike,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      _liked
+                          ? 'assets/icons/24x/Like_Filled.svg'
+                          : 'assets/icons/24x/Like.svg',
+                      width: 28,
+                      height: 28,
+                      colorFilter: ColorFilter.mode(likeColor, BlendMode.srcIn),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatCount(widget.likes + (_liked ? 1 : 0)),
+                      style: actionCountStyle?.copyWith(color: likeColor),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 14),
-              Icon(
-                Icons.chat_bubble_outline,
-                size: 26,
-                color: theme.iconTheme.color,
+              GestureDetector(
+                onTap: _toggleComment,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      _commented
+                          ? 'assets/icons/24x/Text.svg'
+                          : 'assets/icons/24x/Comment.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: ColorFilter.mode(
+                        commentColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatCount(widget.comments + (_commented ? 1 : 0)),
+                      style: actionCountStyle?.copyWith(color: commentColor),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: 14),
-              Icon(Icons.send_outlined, size: 26, color: theme.iconTheme.color),
+              GestureDetector(
+                onTap: _toggleReshare,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      _reshared
+                          ? 'assets/icons/24x/Repost_Filled.svg'
+                          : 'assets/icons/24x/Repost.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: ColorFilter.mode(
+                        reshareColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatCount(widget.reshares + (_reshared ? 1 : 0)),
+                      style: actionCountStyle?.copyWith(color: reshareColor),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              GestureDetector(
+                onTap: _toggleShare,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      _shared
+                          ? 'assets/icons/24x/share_2026_filled.svg'
+                          : 'assets/icons/24x/share_2026.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: ColorFilter.mode(
+                        shareColor,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatCount(widget.shares + (_shared ? 1 : 0)),
+                      style: actionCountStyle?.copyWith(color: shareColor),
+                    ),
+                  ],
+                ),
+              ),
               const Spacer(),
-              Icon(
-                Icons.bookmark_border,
-                size: 26,
-                color: theme.iconTheme.color,
+              GestureDetector(
+                onTap: _toggleSave,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      _saved
+                          ? 'assets/icons/24x/Save_Filled.svg'
+                          : 'assets/icons/24x/Save.svg',
+                      width: 26,
+                      height: 26,
+                      colorFilter: ColorFilter.mode(saveColor, BlendMode.srcIn),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _formatCount(widget.saves + (_saved ? 1 : 0)),
+                      style: actionCountStyle?.copyWith(color: saveColor),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

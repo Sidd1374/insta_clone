@@ -408,16 +408,20 @@ class _ProfessionalDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final divider = Theme.of(context).dividerColor;
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final greyBackground = isDarkMode
+        ? Colors.grey.shade800
+        : Colors.grey.shade300;
 
     return Column(
       children: [
         Container(
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
           decoration: BoxDecoration(
-            color: divider.withValues(alpha: 0.24),
+            color: greyBackground,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -425,13 +429,17 @@ class _ProfessionalDashboard extends StatelessWidget {
             children: [
               Text(
                 'Professional dashboard',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).colorScheme.onSurface,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurface,
                 ),
               ),
-              Text(profile['dashboard']?.toString() ?? ''),
+              Text(
+                profile['dashboard']?.toString() ?? '',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
@@ -443,12 +451,12 @@ class _ProfessionalDashboard extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () {},
                   style: FilledButton.styleFrom(
-                    backgroundColor: divider.withValues(alpha: 0.28),
-                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    backgroundColor: greyBackground,
+                    foregroundColor: colorScheme.onSurface,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    elevation: 0,
                   ),
                   child: const Text(
                     'Edit profile',
@@ -461,12 +469,12 @@ class _ProfessionalDashboard extends StatelessWidget {
                 child: FilledButton(
                   onPressed: () {},
                   style: FilledButton.styleFrom(
-                    backgroundColor: divider.withValues(alpha: 0.28),
-                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    backgroundColor: greyBackground,
+                    foregroundColor: colorScheme.onSurface,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    elevation: 0,
                   ),
                   child: const Text(
                     'Share profile',
