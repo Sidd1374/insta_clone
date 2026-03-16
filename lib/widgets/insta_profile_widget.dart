@@ -22,11 +22,18 @@ class _ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<_ProfileView> {
   int selectedTab = 0;
 
-  final List<IconData> tabs = const [
-    Icons.grid_on,
-    Icons.video_library_outlined,
-    Icons.repeat,
-    Icons.person_pin_outlined,
+  final List<String> tabs = const [
+    "assets/icons/24x/Grid (Filled - 2026).svg",
+    "assets/icons/24x/reels_2026.svg",
+    "assets/icons/24x/Repost.svg",
+    "assets/icons/24x/Tag.svg",
+  ];
+
+  final List<String> selectedTabs = const [
+    "assets/icons/24x/Grid (2026).svg",
+    "assets/icons/24x/reels_2026_filled.svg",
+    "assets/icons/24x/Repost_Filled.svg",
+    "assets/icons/24x/Tag (Filled).svg",
   ];
 
   @override
@@ -60,6 +67,7 @@ class _ProfileViewState extends State<_ProfileView> {
                     _HighlightsSection(profile: profile),
                     _ProfileTabs(
                       tabs: tabs,
+                      selectedTabs: selectedTabs,
                       selectedTab: selectedTab,
                       onTap: (index) {
                         setState(() {
@@ -216,7 +224,14 @@ class _ProfileAppBar extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.alternate_email, color: iconColor),
+                  icon: SvgPicture.asset(
+                    'assets/icons/24x/Threads.svg',
+                    height: 30,
+                    colorFilter: ColorFilter.mode(
+                      iconColor ?? Colors.black,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
                 IconButton(
                   onPressed: () {},
@@ -559,12 +574,14 @@ class _HighlightsSection extends StatelessWidget {
 }
 
 class _ProfileTabs extends StatelessWidget {
-  final List<IconData> tabs;
+  final List<String> tabs;
+  final List<String> selectedTabs;
   final int selectedTab;
   final ValueChanged<int> onTap;
 
   const _ProfileTabs({
     required this.tabs,
+    required this.selectedTabs,
     required this.selectedTab,
     required this.onTap,
   });
@@ -575,18 +592,38 @@ class _ProfileTabs extends StatelessWidget {
     final unselectedColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Row(
-      children: List.generate(
-        tabs.length,
-        (index) => Expanded(
-          child: IconButton(
-            icon: Icon(
-              tabs[index],
-              color: selectedTab == index ? selectedColor : unselectedColor,
+      children: List.generate(tabs.length, (index) {
+        final isSelected = selectedTab == index;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => onTap(index),
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                SvgPicture.asset(
+                  isSelected ? selectedTabs[index] : tabs[index],
+                  height: 24,
+                  width: 24,
+                  colorFilter: ColorFilter.mode(
+                    isSelected
+                        ? selectedColor
+                        : (unselectedColor ?? Colors.grey),
+                    BlendMode.srcIn,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // The indicator bar
+                Container(
+                  height: 2.5,
+                  width: 60,
+                  color: isSelected ? selectedColor : Colors.transparent,
+                ),
+              ],
             ),
-            onPressed: () => onTap(index),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }
